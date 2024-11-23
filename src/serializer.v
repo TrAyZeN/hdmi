@@ -4,9 +4,9 @@
 module serializer #(
     parameter integer WIDTH = 10
 ) (
-    input rst,
     // Serial clock
     input clk,
+    input rst,
     input we,
     input [WIDTH-1:0] data_in,
     output serial_out
