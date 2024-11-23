@@ -41,3 +41,8 @@ if __name__ == "__main__":
     src_dir = root_dir / "src"
 
     run_tests("tmds_encoder", [src_dir / "tmds_encoder.v"])
+    run_tests(
+        "serializer",
+        [src_dir / "serializer.v"],
+        parameters={"WIDTH": 10},
+    )
