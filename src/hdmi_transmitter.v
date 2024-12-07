@@ -48,6 +48,8 @@ module hdmi_transmitter (
           .cnt(cnt[i])
       );
 
+      // OSER10 serializes on rising and falling edges of FCLK
+      // See https://cdn.gowinsemi.com.cn/UG289E.pdf
       OSER10 serializer (
           .D0(tmds_data[i][0]),
           .D1(tmds_data[i][1]),
