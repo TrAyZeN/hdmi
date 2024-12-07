@@ -5,14 +5,15 @@ module video_format_encoder (
     output reg hsync,
     output reg vsync,
     output reg [3:0] ctl,
-    output reg [7:0] pixel_data[3]
+    // NOTE: yosys does not support arrays as module arguments
+    output reg [7:0] pixel_data_0,
+    output reg [7:0] pixel_data_1,
+    output reg [7:0] pixel_data_2
 );
-
-  reg [7:0] pixel_data[3];
   always @(*) begin
-    pixel_data[0] = 8'hff;
-    pixel_data[1] = 8'hff;
-    pixel_data[2] = 8'hff;
+    pixel_data_0 = 8'hff;
+    pixel_data_1 = 8'hff;
+    pixel_data_2 = 8'hff;
   end
 
   // 640x480p @ 59.94/60Hz video format according to CEA-861-D
