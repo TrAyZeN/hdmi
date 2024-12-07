@@ -14,7 +14,7 @@ def run_tests(
     sim = os.getenv("SIM", "icarus")
 
     root_dir = Path(__file__).resolve().parent.parent
-    build_dir = root_dir / "sim_builds" / name
+    build_dir = root_dir / "build" / "simulation" / name
 
     runner = get_runner(sim)
     runner.build(

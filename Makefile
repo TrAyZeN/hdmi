@@ -1,18 +1,23 @@
 YOSYS ?= yosys
 NEXTPNR ?= nextpnr-himbaechel
 
+BUILD_DIR ?= build
+
 .PHONY: all clean
 
-all: top.fs
+all: $(BUILD_DIR)/top.fs
 
-%.fs: %.json
+$(BUILD_DIR)/%.fs: $(BUILD_DIR)/%.json
 	gowin_pack -d GW2A-18C -o $@ $<
 
-%.json: %.synth.json tangnano20k.cst
-	$(NEXTPNR) --json $< --write $@ --device GW2AR-LV18QN88C8/I7 --vopt family=GW2A-18C --vopt cst=tangnano20k.cst --report report.json --placed-svg placed.svg --routed-svg routed.svg
+$(BUILD_DIR)/%.json: $(BUILD_DIR)/%.synth.json tangnano20k.cst
+	$(NEXTPNR) --json $< --write $@ --device GW2AR-LV18QN88C8/I7 --vopt family=GW2A-18C --vopt cst=$(filter %.cst,$^) --report $(BUILD_DIR)/report.json --placed-svg $(BUILD_DIR)/placed.svg --routed-svg $(BUILD_DIR)/routed.svg
 
-top.synth.json: src/top.v src/hdmi_pll.v src/video_format_encoder.v src/hdmi_transmitter.v src/tmds_encoder.v
-	$(YOSYS) -p "read_verilog $^; synth_gowin -top top -json $@"
+$(BUILD_DIR)/top.synth.json: $(BUILD_DIR)/ src/top.v src/hdmi_pll.v src/video_format_encoder.v src/hdmi_transmitter.v src/tmds_encoder.v
+	$(YOSYS) -p "read_verilog $(filter %.v,$^); synth_gowin -top top -json $@"
+
+%/:
+	mkdir -p $@
 
 clean:
-	rm -f *.json *.fs
+	rm -r $(BUILD_DIR)
