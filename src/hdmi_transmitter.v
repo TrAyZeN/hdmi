@@ -1,3 +1,5 @@
+`default_nettype none
+
 // HDMI transmitter
 //
 // Only video data is supported (data island period and control/configuration

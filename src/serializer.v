@@ -1,3 +1,5 @@
+`default_nettype none
+
 // Convert parallel data to serial.
 //
 // It is implemented with a parallel-in serial-out (PISO) shift register.

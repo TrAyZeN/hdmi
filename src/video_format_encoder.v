@@ -1,3 +1,5 @@
+`default_nettype none
+
 module video_format_encoder (
     input pixel_clk,
     input rst,

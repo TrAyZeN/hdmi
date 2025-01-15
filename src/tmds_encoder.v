@@ -1,3 +1,5 @@
+`default_nettype none
+
 // TMDS encoder.
 //
 // This encoder implements the TMDS encoding algorithm from DVI 1.0
