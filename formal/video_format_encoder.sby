@@ -1,0 +1,17 @@
+[tasks]
+prf
+cvr
+
+[options]
+prf: mode prove
+cvr: mode cover
+
+[engines]
+smtbmc
+
+[script]
+read -formal video_format_encoder.v
+prep -top video_format_encoder
+
+[files]
+src/video_format_encoder.v
