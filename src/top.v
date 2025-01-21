@@ -55,8 +55,8 @@ module top (
       .tmds_data_2(tmds_data[2])
   );
 
-  genvar channel_idx;
   generate
+    genvar channel_idx;
     for (channel_idx = 0; channel_idx < 3; channel_idx = channel_idx + 1) begin
       TLVDS_OBUF tmds_channel_driver (
           .I (tmds_data[channel_idx]),

@@ -13,25 +13,25 @@ async def test_blanking_patterns(dut):
     dut.c0.value = 0
     dut.c1.value = 0
     await Timer(5, units="ns")
-    assert dut.q_out.value == 0b0010101011
+    assert dut.q_out.value == 0b1101010100
     assert dut.cnt.value == 0
 
     dut.c0.value = 1
     dut.c1.value = 0
     await Timer(5, units="ns")
-    assert dut.q_out.value == 0b1101010100
+    assert dut.q_out.value == 0b0010101011
     assert dut.cnt.value == 0
 
     dut.c0.value = 0
     dut.c1.value = 1
     await Timer(5, units="ns")
-    assert dut.q_out.value == 0b0010101010
+    assert dut.q_out.value == 0b0101010100
     assert dut.cnt.value == 0
 
     dut.c0.value = 1
     dut.c1.value = 1
     await Timer(5, units="ns")
-    assert dut.q_out.value == 0b1101010101
+    assert dut.q_out.value == 0b1010101011
     assert dut.cnt.value == 0
 
 

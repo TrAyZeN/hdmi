@@ -47,12 +47,12 @@ module hdmi_transmitter (
     d1[2] = ctl[3];
   end
 
-  genvar channel_idx;
   generate
+    genvar channel_idx;
     for (channel_idx = 0; channel_idx < 3; channel_idx = channel_idx + 1) begin
       always @(posedge pixel_clk or posedge rst) begin
         if (rst) begin
-          cnt_prev[channel_idx] <= 0;
+          cnt_prev[channel_idx] <= 5'b0;
         end else begin
           cnt_prev[channel_idx] <= cnt[channel_idx];
         end

@@ -12,10 +12,12 @@ module video_format_encoder (
     output reg [7:0] pixel_data_1,
     output reg [7:0] pixel_data_2
 );
+  reg [23:0] frame_cnt;
+
   always @(*) begin
-    pixel_data_0 = 8'hff;
-    pixel_data_1 = 8'hff;
-    pixel_data_2 = 8'hff;
+    pixel_data_0 = frame_cnt[7:0];
+    pixel_data_1 = frame_cnt[15:8];
+    pixel_data_2 = frame_cnt[23:16];
   end
 
   // 640x480p @ 59.94/60Hz video format according to CEA-861-D
@@ -42,6 +44,7 @@ module video_format_encoder (
     if (rst) begin
       hcnt <= 0;
       vcnt <= 0;
+      frame_cnt <= 0;
     end else begin
       if (hcnt < HORIZONTAL_BLANKING + HORIZONTAL_ACTIVE - 1) begin
         hcnt <= hcnt + 1;
@@ -52,6 +55,7 @@ module video_format_encoder (
           vcnt <= vcnt + 1;
         end else begin
           vcnt <= 0;
+          frame_cnt <= frame_cnt + 1;
         end
       end
     end
