@@ -2,6 +2,7 @@ IO_LOC "clk" 4;
 // https://github.com/YosysHQ/apicula/blob/master/doc/longwires.md
 CLOCK_LOC "clk" BUFG;
 
+// Reset on key 1
 IO_LOC "rst" 88;
 IO_PORT "rst" PULL_MODE=NONE;
 

@@ -15,17 +15,21 @@ module top (
   wire [3:0] ctl;
   wire [7:0] pixel_data[3];
   wire tmds_data[3];
+  wire pll_locked;
 
-  // serial_clk frequency is 5 times pixel_clk frequency as OSER10 transmits on rising and falling edges
   hdmi_pll hdmi_pll (
-      .clock_in(clk),
-      .clock_out(serial_clk),
-      .clock_out_div(pixel_clk)
+      .rst(rst),
+      .clk_in(clk),
+      .serial_clk(serial_clk),
+      .pixel_clk(pixel_clk),
+      .locked(pll_locked)
   );
+
+  wire hdmi_rst = rst | ~pll_locked;
 
   video_format_encoder video_format_encoder (
       .pixel_clk(pixel_clk),
-      .rst(rst),
+      .rst(hdmi_rst),
       .de(de),
       .hsync(hsync),
       .vsync(vsync),
@@ -38,7 +42,7 @@ module top (
   hdmi_transmitter hdmi_transmitter (
       .serial_clk(serial_clk),
       .pixel_clk(pixel_clk),
-      .rst(rst),
+      .rst(hdmi_rst),
       .de(de),
       .pixel_data_0(pixel_data[0]),
       .pixel_data_1(pixel_data[1]),
