@@ -147,12 +147,12 @@ module video_format_encoder #(
     end
 
     if (hcnt >= HSYNC_START && hcnt < HSYNC_END)
-      assert (!hsync);
-      else assert (hsync);
+      assert (SYNC_EN_POLARITY ? hsync : !hsync);
+      else assert (SYNC_EN_POLARITY ? !hsync : hsync);
 
     if (vcnt >= VSYNC_START && vcnt < VSYNC_END)
-      assert (!vsync);
-      else assert (vsync);
+      assert (SYNC_EN_POLARITY ? vsync : !vsync);
+      else assert (SYNC_EN_POLARITY ? !vsync : vsync);
 
     if (vcnt >= VERTICAL_ACTIVE_START && vcnt < VERTICAL_ACTIVE_START + VERTICAL_ACTIVE) begin
       if (hcnt >= HORIZONTAL_ACTIVE_START)

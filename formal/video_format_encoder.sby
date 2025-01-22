@@ -10,8 +10,10 @@ cvr: mode cover
 smtbmc
 
 [script]
-read -formal video_format_encoder.v
+verilog_defines -DVIDEO_FORMAT_640x480
+read -formal video_format_encoder.v video_formats.vh
 prep -top video_format_encoder
 
 [files]
 src/video_format_encoder.v
+src/video_formats.vh

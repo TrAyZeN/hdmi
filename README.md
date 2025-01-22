@@ -14,3 +14,8 @@ openFPGALoader -b tangnano20k build/top.fs
 ```sh
 poetry run python tests/test_runner.py
 ```
+
+## Run formal verification
+```sh
+make verify
+```

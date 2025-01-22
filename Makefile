@@ -1,12 +1,13 @@
 YOSYS ?= yosys
 NEXTPNR ?= nextpnr-himbaechel
+SBY ?= sby
 
 BUILD_DIR ?= build
 
 # Select video format (valid formats: 640x480, 1280x720)
 VIDEO_FORMAT ?= 1280x720
 
-.PHONY: all clean
+.PHONY: all verify clean
 
 all: $(BUILD_DIR)/top.fs
 
@@ -21,6 +22,9 @@ $(BUILD_DIR)/top.synth.json: $(BUILD_DIR)/ src/top.v src/hdmi_pll.v src/video_fo
 
 %/:
 	mkdir -p $@
+
+verify: formal/video_format_encoder.sby
+	$(SBY) -f $<
 
 clean:
 	rm -r $(BUILD_DIR)
