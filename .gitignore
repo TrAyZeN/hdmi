@@ -1,6 +1,7 @@
 __pycache__/
 /env
 /sim_builds
+/build
 
 *.fs
 *.json

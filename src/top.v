@@ -1,14 +1,14 @@
 `default_nettype none
 
+`include "video_formats.vh"
+
 module top (
     input clk,
-    // TODO: Check polarity
     input rst,
     output [2:0] tmds_data_p,
     output [2:0] tmds_data_n,
     output tmds_clk_p,
     output tmds_clk_n
-    // TODO: CEC, EDID_CLK, EDID_DAT
 );
   wire serial_clk, pixel_clk;
   wire de, hsync, vsync;
@@ -16,6 +16,7 @@ module top (
   wire [7:0] pixel_data[3];
   wire tmds_data[3];
   wire pll_locked;
+
 
   hdmi_pll hdmi_pll (
       .rst(rst),

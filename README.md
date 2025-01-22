@@ -1,5 +1,9 @@
 # hdmi
 
+## Dependencies
+This project uses OSS CAD Suite. You can get a nightly build from
+https://github.com/YosysHQ/oss-cad-suite-build.
+
 ## Build
 ```sh
 make

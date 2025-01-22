@@ -1,6 +1,12 @@
 `default_nettype none
+`include "video_formats.vh"
 
-module video_format_encoder (
+// Produce control and data signals based on the video format timings.
+//
+// Make pass valid CEA-861-D video format parameters. See video_formats.vh for
+// already defined ones.
+module video_format_encoder #(
+) (
     input pixel_clk,
     input rst,
     output reg de,
@@ -12,30 +18,52 @@ module video_format_encoder (
     output reg [7:0] pixel_data_1,
     output reg [7:0] pixel_data_2
 );
-  reg [23:0] frame_cnt;
+  // Number of active horizontal clocks per line
+  localparam integer HORIZONTAL_ACTIVE = `HORIZONTAL_ACTIVE;
+  // Number of blanking horizontal clocks per line
+  localparam integer HORIZONTAL_BLANKING = `HORIZONTAL_BLANKING;
+  // Horizontal clock offset (zero-based) of hsync enable
+  localparam integer HSYNC_START = `HSYNC_START;
+  // hsync enable duration in horizontal clocks
+  localparam integer HSYNC_LEN = `HSYNC_LEN;
+  // Line offset (zero-based) of active lines
+  localparam integer VERTICAL_ACTIVE_START = `VERTICAL_ACTIVE_START;
+  // Number of active vertical lines
+  localparam integer VERTICAL_ACTIVE = `VERTICAL_ACTIVE;
+  // Number of blanking vertical lines
+  localparam integer VERTICAL_BLANKING = `VERTICAL_BLANKING;
+  // Line offset (zero-based) of vsync enable
+  localparam integer VSYNC_START = `VSYNC_START;
+  // vsync enable duration in lines
+  localparam integer VSYNC_LEN = `VSYNC_LEN;
+  // High polarity of the hsync and vsync signals. 0 means sync signals are
+  // low when enable, 1 means sync signals are high when enable.
+  localparam integer SYNC_EN_POLARITY = `SYNC_EN_POLARITY;
 
-  always @(*) begin
-    pixel_data_0 = frame_cnt[7:0];
-    pixel_data_1 = frame_cnt[15:8];
-    pixel_data_2 = frame_cnt[23:16];
-  end
-
-  // 640x480p @ 59.94/60Hz video format according to CEA-861-D
-  // Pixel clock frequency is 25.125/25.200MHz
-
-  localparam integer HORIZONTAL_ACTIVE = 640;
-  localparam integer HORIZONTAL_BLANKING = 160;
   localparam integer HORIZONTAL_ACTIVE_START = HORIZONTAL_BLANKING;
-  localparam integer HSYNC_START = 16;
-  localparam integer HSYNC_END = HSYNC_START + 96;
+  localparam integer HSYNC_END = HSYNC_START + HSYNC_LEN;
   localparam integer VIDEO_GUARD_START = HORIZONTAL_ACTIVE_START - 2;
   localparam integer VIDEO_PREAMBLE_START = VIDEO_GUARD_START - 8;
 
-  localparam integer VERTICAL_ACTIVE = 480;
-  localparam integer VERTICAL_BLANKING = 45;
-  localparam integer VERTICAL_ACTIVE_START = 35;
-  localparam integer VSYNC_START = 0;
-  localparam integer VSYNC_END = VSYNC_START + 2;
+  localparam integer VSYNC_END = VSYNC_START + VSYNC_LEN;
+
+  reg [23:0] frame_cnt;
+
+  always @(*) begin
+    if (hcnt < HORIZONTAL_BLANKING + HORIZONTAL_ACTIVE / 3) begin
+      pixel_data_0 = frame_cnt[7:0];
+      pixel_data_1 = frame_cnt[15:8];
+      pixel_data_2 = frame_cnt[23:16];
+    end else if (hcnt < HORIZONTAL_BLANKING + 2 * (HORIZONTAL_ACTIVE / 3)) begin
+      pixel_data_0 = frame_cnt[15:8];
+      pixel_data_1 = frame_cnt[7:0];
+      pixel_data_2 = frame_cnt[23:16];
+    end else begin
+      pixel_data_0 = frame_cnt[15:8];
+      pixel_data_1 = frame_cnt[23:16];
+      pixel_data_2 = frame_cnt[7:0];
+    end
+  end
 
   reg [$clog2(VERTICAL_BLANKING + VERTICAL_ACTIVE) - 1:0] vcnt;
   reg [$clog2(HORIZONTAL_BLANKING + HORIZONTAL_ACTIVE) - 1:0] hcnt;
@@ -63,15 +91,15 @@ module video_format_encoder (
 
   always @(hcnt or vcnt) begin
     if (hcnt >= HSYNC_START && hcnt < HSYNC_END) begin
-      hsync = 1'b0;
+      hsync = SYNC_EN_POLARITY ? 1'b1 : 1'b0;
     end else begin
-      hsync = 1'b1;
+      hsync = SYNC_EN_POLARITY ? 1'b0 : 1'b1;
     end
 
     if (vcnt >= VSYNC_START && vcnt < VSYNC_END) begin
-      vsync = 1'b0;
+      vsync = SYNC_EN_POLARITY ? 1'b1 : 1'b0;
     end else begin
-      vsync = 1'b1;
+      vsync = SYNC_EN_POLARITY ? 1'b0 : 1'b1;
     end
 
     if (hcnt >= HORIZONTAL_ACTIVE_START && vcnt >= VERTICAL_ACTIVE_START && vcnt < VERTICAL_ACTIVE_START + VERTICAL_ACTIVE) begin
@@ -86,6 +114,7 @@ module video_format_encoder (
     end else if (hcnt >= VIDEO_GUARD_START && hcnt < HORIZONTAL_ACTIVE_START) begin
       // Video guard band
       // NOTE: Previous vsync and hsync assignment are coherent with the video guard
+      // WARN: I don't think it is still the case for other formats than 640x480
       {ctl[1], ctl[0]} <= 2'b10;
       {ctl[3], ctl[2]} <= 2'b11;
     end else begin
@@ -138,5 +167,5 @@ module video_format_encoder (
       end
     end
   end
-`endif
+`endif  // FORMAL
 endmodule

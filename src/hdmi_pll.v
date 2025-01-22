@@ -27,12 +27,20 @@ module hdmi_pll (
       // CLKOUT = (CLKIN * FBDIV) / IDIV
       // VCO = CLKOUT * ODIV
       // CLKOUTD = CLKOUT / SDIV
-      .IDIV_SEL(2),  // -> PFD = 9.0 MHz (range: 3-500 MHz)
-      .FBDIV_SEL(13),  // -> CLKOUT = 126.0 MHz (range: 3.90625-625 MHz)
-      .ODIV_SEL(4),  // -> VCO = 504.0 MHz (range: 500-1250 MHz)
-      .PSDA_SEL(4'b0000)  //,
-      // SDIV_SEL cannot be used to produce the pixel clock as it does not
-      // support odd values (and we need a divisor of 5)
+`ifdef VIDEO_FORMAT_640x480
+      // Pixel clock frequency for 640x480 @ 60Hz is 25.200MHz
+      // .IDIV_SEL(2),  // -> PFD = 9.0 MHz (range: 3-500 MHz)
+      // .FBDIV_SEL(13),  // -> CLKOUT = 126.0 MHz (range: 3.90625-625 MHz)
+      // .ODIV_SEL(4)  // -> VCO = 504.0 MHz (range: 500-1250 MHz)
+`endif  // VIDEO_FORMAT_640x480
+`ifdef VIDEO_FORMAT_1280x720
+      // Pixel clock frequency for 1280x720 @ 60Hz is 74.250MHz
+      .IDIV_SEL(3),  // -> PFD = 6.75 MHz (range: 3-500 MHz)
+      .FBDIV_SEL(54),  // -> CLKOUT = 371.25 MHz (range: 3.90625-625 MHz)
+      .ODIV_SEL(2)  // -> VCO = 742.5 MHz (range: 500-1250 MHz)
+`endif  // VIDEO_FORMAT_1280x720
+      // NOTE: SDIV_SEL cannot be used to produce the pixel clock as it does not
+      // support odd values (and we need a divisor of 5).
   ) pll (
       .CLKOUTP(),
       .CLKOUTD(),
@@ -61,5 +69,4 @@ module hdmi_pll (
       .CALIB (1'b1),
       .CLKOUT(pixel_clk)
   );
-
 endmodule
